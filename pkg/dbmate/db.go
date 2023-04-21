@@ -29,6 +29,7 @@ var (
 	ErrMigrationDirNotFound  = errors.New("could not find migrations directory")
 	ErrMigrationNotFound     = errors.New("can't find migration file")
 	ErrCreateDirectory       = errors.New("unable to create directory")
+	ErrFeatureNotImplemented = errors.New("this feature is not implemented for this database")
 )
 
 func NewDSN(driver string, input string) (dbutil.DSN, error) {
@@ -62,6 +63,8 @@ type DB struct {
 	MigrationsTableName string
 	// SchemaFile specifies the location for schema.sql file
 	SchemaFile string
+	// Alter the StatementTimeout
+	StatementTimeout time.Duration
 	// Verbose prints the result of each statement execution
 	Verbose bool
 	// WaitBefore will wait for database to become available before running any actions
@@ -337,6 +340,13 @@ func (db *DB) Migrate() error {
 		return err
 	}
 	defer dbutil.MustClose(sqlDB)
+
+	if db.StatementTimeout != 0 {
+		err = drv.IncreaseStatementTimeout(sqlDB, db.StatementTimeout)
+		if err != nil && err != ErrFeatureNotImplemented {
+			return err
+		}
+	}
 
 	for _, migration := range migrations {
 		if migration.Applied {

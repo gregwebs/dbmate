@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/amacneil/dbmate/v2/pkg/dbmate"
 	"github.com/amacneil/dbmate/v2/pkg/dbutil"
@@ -337,6 +338,10 @@ func (drv *Driver) Ping() error {
 	}
 
 	return err
+}
+
+func (drv *Driver) IncreaseStatementTimeout(db *sql.DB, timeout time.Duration) error {
+	return dbmate.ErrFeatureNotImplemented
 }
 
 func (drv *Driver) quotedMigrationsTableName() string {

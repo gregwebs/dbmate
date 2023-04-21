@@ -92,6 +92,12 @@ func NewApp() *cli.App {
 			Usage:   "timeout for --wait flag",
 			Value:   defaultDB.WaitTimeout,
 		},
+		&cli.DurationFlag{
+			Name:     "statement-timeout",
+			EnvVars:  []string{"STATEMENT_TIMEOUT"},
+			Usage:    "the executing statement timeout",
+			Required: false,
+		},
 	}
 
 	app.Commands = []*cli.Command{
@@ -246,6 +252,10 @@ func action(f func(*dbmate.DB, *cli.Context) error) cli.ActionFunc {
 		waitTimeout := c.Duration("wait-timeout")
 		if waitTimeout != 0 {
 			db.WaitTimeout = waitTimeout
+		}
+		overrideStatementTimeout := c.Duration("statement-timeout")
+		if overrideStatementTimeout != 0 {
+			db.StatementTimeout = overrideStatementTimeout
 		}
 
 		return f(db, c)

@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/amacneil/dbmate/v2/pkg/dbmate"
 	"github.com/amacneil/dbmate/v2/pkg/dbutil"
@@ -393,6 +394,17 @@ func TestClickHousePing(t *testing.T) {
 	err = drv.Ping()
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "connect: connection refused")
+}
+
+func TestStatementTimeout(t *testing.T) {
+	drv := testClickHouseDriver(t)
+
+	db := prepTestClickHouseDB(t)
+	defer dbutil.MustClose(db)
+
+	err := drv.IncreaseStatementTimeout(db, time.Minute)
+	require.Error(t, err)
+	require.EqualValues(t, dbmate.ErrFeatureNotImplemented, err)
 }
 
 func TestClickHouseQuotedMigrationsTableName(t *testing.T) {
