@@ -23,6 +23,7 @@ type Driver interface {
 	DeleteMigration(dbutil.Transaction, string) error
 	Ping() error
 	IncreaseStatementTimeout(*sql.DB, time.Duration) error
+	WrapAndDetailError(err error, query string) error
 }
 
 // DriverConfig holds configuration passed to driver constructors

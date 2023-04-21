@@ -344,6 +344,12 @@ func (drv *Driver) IncreaseStatementTimeout(db *sql.DB, timeout time.Duration) e
 	return dbmate.ErrFeatureNotImplemented
 }
 
+// WrapAndDetailError allows the database driver to add additional error information
+// by inspecting the SQL error
+func (drv *Driver) WrapAndDetailError(err error, query string) error {
+	return err
+}
+
 func (drv *Driver) quotedMigrationsTableName() string {
 	return drv.quoteIdentifier(drv.migrationsTableName)
 }

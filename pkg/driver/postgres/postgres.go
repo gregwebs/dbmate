@@ -396,6 +396,23 @@ func (drv *Driver) IncreaseStatementTimeout(db *sql.DB, timeout time.Duration) e
 	return err
 }
 
+// WrapAndDetailError allows the database driver to add additional error information
+// by inspecting the SQL error
+func (drv *Driver) WrapAndDetailError(err error, query string) error {
+	pqErr, ok := err.(*pq.Error)
+	if !ok {
+		// fallback to non-detailed error message
+		return err
+	}
+	position, posErr := strconv.Atoi(pqErr.Position)
+	if posErr != nil {
+		// if unable to parse position as number
+		// fallback to non-detailed error message
+		return err
+	}
+	return dbutil.NewDetailedSQLError(err, query, position)
+}
+
 func (drv *Driver) quotedMigrationsTableName(db dbutil.Transaction) (string, error) {
 	schema, name, err := drv.quotedMigrationsTableNameParts(db)
 	if err != nil {

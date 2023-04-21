@@ -4,7 +4,8 @@
 /.cache
 /db
 /dbmate
-/testdata/db/schema.sql
+/dist
+/testdata/*/db/schema.sql
 /vendor
 dist
 node_modules
